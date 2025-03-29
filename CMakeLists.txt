@@ -4,7 +4,6 @@ project(zbuild VERSION 0.1.0 LANGUAGES CXX)
 # Set standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_PREFIX_PATH "/Users/nicholasraynes/Qt6")
 
 # Use folders in IDEs
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

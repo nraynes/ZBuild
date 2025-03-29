@@ -1,3 +1,122 @@
+# Building Package
+
+## Step 1: Configure and build
+```
+cd <path_to_project>
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
+
+## Step 2: Install (system-wide or locally)
+```
+cmake -B build -DCMAKE_INSTALL_PREFIX=./zbuild-install
+cmake --build build
+sudo cmake --install build
+```
+
+## Package
+```
+cd zbuild-install
+sudo tar -czf zbuild-0.1.0.tar.gz *
+```
+
+# Installing Package
+
+## Step 1: Install and setup ZBuild
+
+Install ZBuild by downloading the tar.gz file or creating it locally via the previous section.
+
+- Move tar to home folder.
+```
+mkdir $HOME/ZBuild
+mv zbuild-0.1.0.tar.gz $HOME/ZBuild
+cd $HOME/ZBuild
+```
+
+- Command to extract tar.gz.  
+```
+tar -xzf zbuild-0.1.0.tar.gz
+```
+
+- (Optionally) Delete tar.gz.
+```
+rm zbuild-0.1.0.tar.gz
+```
+
+## Step 2: Install and setup Qt
+
+Install Qt by downloading the tar.gz file from the official [website](https://www.qt.io/offline-installers).
+The latest version ZBuild uses is 6.8.3.
+
+- Extract the tar.xz file (replace with name of file you downloaded).  
+```
+cd <path_to_where_qt_tar.xz_downloaded>
+tar -xf qt-everywhere-src-6.8.3.tar.xz
+```
+
+- Configure Qt
+```
+cd qt-everywhere-src-6.8.3
+./configure -prefix $HOME/Qt6
+cmake --build .
+```
+
+- Export the path.
+```
+export CMAKE_PREFIX_PATH="$HOME/Qt6"
+```
+
+## Step 3: Include in CMakeLists.txt
+
+```
+find_package(zbuild REQUIRED PATHS $HOME/ZBuild/lib/cmake/zbuild)
+
+target_link_libraries(<app_name> PRIVATE zbuild::zbuild)
+```
+
+## Step 4: Build project.
+
+```
+cmake -B build
+cmake --build build
+```
+
+## Step 5: Set up CMake Kit (If Using VS Code)
+
+- Ensure that extensions "Cmake Tools" from Microsoft and "Cmake" from twxs are installed in VSCode.
+
+- Create a .vscode folder in your project (If you haven't already), then create a file called cmake-kits.json.
+```
+cd <path_to_project>
+mkdir .vscode
+touch .vscode/cmake-kits.json
+open .vscode/cmake-kits.json
+```
+
+- Paste this into the cmake-kits.json file and save it.
+```
+[
+  {
+    "name": "Qt6 with Ninja",
+    "compilers": {
+      "CXX": "/usr/bin/clang++",
+      "C": "/usr/bin/clang"
+    },
+    "environmentVariables": {
+      "CMAKE_PREFIX_PATH": "$HOME/Qt6"
+    },
+    "toolchainFile": "",
+    "preferredGenerator": {
+      "name": "Ninja"
+    }
+  }
+]
+```
+
+- Next, hit "Cmd + Shift + P" and choose "CMake: Configure", then choose the kit "Qt6 with Ninja".
+
+# General
+
 ZBuild is a wrapper for Qt to make GUI development easy and simple for quick prototyping or basic tools.
 
 Features:
