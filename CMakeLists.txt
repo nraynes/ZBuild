@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 project(ZBuild VERSION 0.1.0 LANGUAGES CXX)
 file(WRITE "${CMAKE_BINARY_DIR}/zbuild_version.txt" "${PROJECT_VERSION}")
 file(WRITE "${CMAKE_BINARY_DIR}/zbuild_name.txt" "${PROJECT_NAME}")
@@ -53,10 +53,10 @@ install(TARGETS ZBuild
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     RUNTIME DESTINATION bin
-    INCLUDES DESTINATION include/ZBuild
+    INCLUDES DESTINATION include
 )
 
-install(DIRECTORY include DESTINATION include/ZBuild)
+install(DIRECTORY include/ DESTINATION include/ZBuild)
 install(EXPORT ZBuildTargets
     FILE ZBuildTargets.cmake
     NAMESPACE ZBuild::

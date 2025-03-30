@@ -1,5 +1,5 @@
 # ZBuildInstall.cmake
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 message(STATUS "Installing project")
 
 # === CONFIG ===]
@@ -27,10 +27,11 @@ if(EXISTS ${INSTALL_PREFIX})
     file(MAKE_DIRECTORY ${ZBUILD_DIR})
     execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${PACKAGE_PATH} ${ZBUILD_DIR})
     execute_process(
-        COMMAND ${CMAKE_COMMAND} -E tar "xzf" ${PACKAGE_NAME}
+        COMMAND ${CMAKE_COMMAND} -E tar xzf ${PACKAGE_NAME}
         WORKING_DIRECTORY ${ZBUILD_DIR}
         RESULT_VARIABLE tar_result
     )
+    message(STATUS ${tar_result})
     if(NOT tar_result EQUAL 0)
         message(FATAL_ERROR "Failed to extract ${PROJECT_NAME}: ${tar_result}")
     endif()

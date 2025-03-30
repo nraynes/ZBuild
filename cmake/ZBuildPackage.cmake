@@ -1,5 +1,5 @@
 # ZBuildPackage.cmake
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 message(STATUS "Packaging project")
 
 # === CONFIG ===]
@@ -39,10 +39,10 @@ endif()
 # # === Step 3: Package ===
 message(STATUS "Creating archive ${PACKAGE_NAME} in ${INSTALL_PREFIX}")
 
-file(GLOB INSTALL_CONTENTS "${INSTALL_PREFIX}")
+file(GLOB INSTALL_CONTENTS "${INSTALL_PREFIX}/*")
 
 execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar "czf" ${PACKAGE_NAME} ${INSTALL_CONTENTS} --format=gnutar
+    COMMAND ${CMAKE_COMMAND} -E tar czf ${PACKAGE_NAME} ${INSTALL_CONTENTS}
     WORKING_DIRECTORY ${INSTALL_PREFIX}
     RESULT_VARIABLE tar_result
 )
