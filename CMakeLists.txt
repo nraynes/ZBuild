@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(ZBuild VERSION 0.1.0 LANGUAGES CXX)
+file(WRITE "${CMAKE_BINARY_DIR}/zbuild_version.txt" "${PROJECT_VERSION}")
+file(WRITE "${CMAKE_BINARY_DIR}/zbuild_name.txt" "${PROJECT_NAME}")
 
 # Set standard
 set(CMAKE_CXX_STANDARD 17)
@@ -54,7 +56,7 @@ install(TARGETS ZBuild
     INCLUDES DESTINATION include/ZBuild
 )
 
-install(DIRECTORY include/ DESTINATION include/ZBuild)
+install(DIRECTORY include DESTINATION include/ZBuild)
 install(EXPORT ZBuildTargets
     FILE ZBuildTargets.cmake
     NAMESPACE ZBuild::
@@ -66,3 +68,16 @@ install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/ZBuildConfigVersion.cmake"
     DESTINATION lib/cmake/ZBuild
 )
+
+if(DEFINED ENV{ZBUILD_AUTO_PACKAGE})
+    add_custom_target(auto_package ALL
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake/ZBuildPackage.cmake
+    )
+    add_dependencies(auto_package ZBuild)
+    if(DEFINED ENV{ZBUILD_AUTO_INSTALL})
+        add_custom_target(auto_install ALL
+            COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake/ZBuildInstall.cmake
+        )
+        add_dependencies(auto_install auto_package)
+    endif()
+endif()
