@@ -515,6 +515,8 @@ container
 ```
 
 # EXAMPLE USAGE
+
+**Example 1**
 ```
 ZBuild()  
   .title("ZLogin App")  
@@ -560,4 +562,88 @@ ZBuild()
       .done()
 
   .start();  // Run the app!
+```
+
+**Example 2**
+```
+ZBuild()
+  .title("Settings")
+  .icon(":/icons/settings.png")
+  .debug_mode(false)
+
+  .add().container("settings_container")
+    .layout()
+      .size().scaled().auto().fit_container().margin(10).scaled().build()
+      .location().scaled().unit().pixels()
+          .X(0).relative_to().center()
+          .Y(0).relative_to().center()
+          .set()
+      .build()
+
+    .add.label("settings_title")
+      .layout()
+        .location().scaled().X(0).relative_to().top().Y(-10).relative_to().top().set()
+        .size().scaled().auto().fit_content().padding(5).scaled().build()
+      .text("Application Settings")
+      .font("Arial", 16, true)
+      .prototype("title_label_style")
+      .done()
+
+    .add.toggle("dark_mode_toggle")
+      .layout().use_prototype("align_center").build()
+      .label("Dark Mode")
+      .checked(false)
+      .on_toggle().bind([](auto root) {
+        auto isDark = root->widget("dark_mode_toggle")->get("checked");
+        // Update theme or persist setting
+      })
+      .done()
+
+    .add.button("save_button")
+      .layout().use_prototype("align_center").build()
+      .text("Save Settings")
+      .on_click().bind([](auto root) {
+        // Save all settings
+      })
+      .done()
+
+    .done()
+
+  .start();
+```
+
+**Example 3**
+```
+ZBuild()
+  .title("Dashboard")
+  .icon(":/icons/dashboard.png")
+  .debug_mode(true)
+
+  .add().container("main")
+    .layout().size().scaled().auto().fit_container().margin(15).scaled().build()
+            .location().scaled().X(0).relative_to().center().Y(0).relative_to().center().set()
+    .build()
+
+    .add.label("welcome")
+      .text("Welcome, User")
+      .layout().use_prototype("align_top").build()
+      .font("Segoe UI", 14, true)
+      .done()
+
+    .add.chart("usage_chart")  // Assuming a custom widget and builder were created
+      .layout().use_prototype("align_center").build()
+      .data_source("resource_usage")
+      .refresh_interval(5000)
+      .done()
+
+    .add.button("refresh")
+      .text("Refresh Now")
+      .on_click().bind([](auto root) {
+        root->widget("usage_chart")->invoke("refresh");
+      })
+      .done()
+
+    .done()
+
+  .start();
 ```
