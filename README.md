@@ -150,6 +150,7 @@ open .vscode/cmake-kits.json
 - Next, hit "Cmd + Shift + P" and choose "CMake: Configure", then choose the kit "Qt6 with Ninja".
 - If you already configured the project, the choose "CMake: Select a Kit" instead.
 - If you are just developing in the ZBuild project and not installing it to another project, don't include the ZBuild path in CMAKE_PREFIX_PATH for the kit. However, if you are using ZBuild as a dependency in another project, you'll have to install it to your machine via the instructions above and make sure to use the CMAKE_PREFIX_PATH from the kits above. Alternatively, change the path names to a custom location if you installed ZBuild or Qt to a custom location on your machine. Both ZBuild and Qt must be installed separately.
+- The first kit is the only kit needed if installing the project as a dependency. The other 2 kits are for automatic building and installing if you are developing in ZBuild.
 - These different kits give the option to automatically package and/or install the release version of the project.
 
 # Development Settings
