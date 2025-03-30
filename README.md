@@ -322,15 +322,22 @@ container
 ## Widget Builder
 ```
 .<method_that_called_widget>  
+    .theme()
+        .<theme_builder>
     .layout()  
         .<layout_builder>  
-        .use_prototype(prototype_id, widget)  # Use a layout prototype. Will override all current layout settings.  
+    .animation()
+        .add(animation_id)
+            .<animation_builder>
+        .remove(animation_id)  # Removes animation.
+        .start(animation_id)  # Start Animation.
     .<event_type>  # May or may not have event param.  
         .after(milliseconds)  # Can specify time in ms to run bound method after event starts.  
         .finished()  # Specifes to run bound method after event finishes.  
             .after(milliseconds)  # Can specify time in ms to run bound method after event finishes.  
         .<modifier>(modifier_params)  # Specific events may have additional modifiers.  
         .bind(method)  # Method recieves a pointer to the root window which contains the entire app. This also exits the event editor. Bound method defaults to running right when event starts unless modifers are present.  
+        .animate(animation_id)  # Bind an animation to this event. Animation will start when event conditions trigger.
     .<configuration>(configuration_params)  # Specific widgets may have additional configuration options.  
     .prototype(prototype_id)  # Creates a prototype of this widget that can be instantiated multiple times. Saves to root window.  
     .done()  # Exits widget editor. Returns to the container hosting this widget.  
@@ -342,11 +349,10 @@ container
 .<method_that_called_layout_builder>  
     .size()  
         .<size_builder>  
-        .use_prototype(prototype_id, widget)  # Use a size prototype. Will override all current size settings.  
     .location()  
         .<location_builder>  
-        .use_prototype(prototype_id, widget)  # Use a location prototype. Will override all current location settings.  
     .prototype(prototype_id)  # Creates a prototype of this layout that can be reused by multiple widgets. Saves to root window. Does not save relative_to information.  
+    .use_prototype(prototype_id, layout)
     .build()  # Finalizes the layout and returns to the widget editor that called the manager.  
 ```
 
@@ -358,42 +364,35 @@ container
             .padding(value)  # Sets padding around inner content.  
                 .fixed()  # default. fixes padding so it cannot change. Can cause parts of widget to be hidden if window is to small.  
                 .scaled()  # allows padding to squish if window size changes and becomes too small. cannot be below 0.  
-                .unit()  
-                    .pixels()  # default.  
-                    .scale()  # scaled value where 1 represents the height or width value of the relative widget.  
-                        .relative_to(widget_id)  # Defaults to container holding this widget.  
-                    .percent()  # percent value, just the scaled value * 100.  
-                        .relative_to(widget_id)  # Defaults to container holding this widget.  
+                .<unit_selector> 
         .fit_container()  # Scales to fit to container holding widget.  
             .margin(value)  # Sets margin around bounding box.  
                 .fixed()  # default. fixes margin so it cannot change. Can cause parts of widget to be hidden if window is to small.  
                 .scaled()  # allows margin to squish if window size changes and becomes too small. cannot be below 0.  
-                .unit()  
-                    .pixels()  # default.  
-                    .scale()  # scaled value where 1 represents the height or width value of the relative widget.  
-                        .relative_to(widget_id)  # Defaults to container holding this widget.  
-                    .percent()  # percent value, just the scaled value * 100.  
-                        .relative_to(widget_id)  # Defaults to container holding this widget.  
+                .<unit_selector>
     .fixed()  # size does not change with window resizing or layout updates.  
         .<size_selector>   
     .scaled()  # size does change with window resizing or layout updates.  
         .<size_selector>  
     .prototype(prototype_id)  # Saves a prototype of this size configuration to the root window. # Does not save relative_to information.  
+    .use_prototype(prototype_id, size)
     .build()  # builds the size and returns to the layout manager.  
 ```
 
 ### Location Builder
 ```
 .<method_that_called_location_builder>  
+    .Z(index)  # Set the z index for the widget. Controls overlapping.
     .fixed()  # location does not change with window resizing or layout updates.  
         .<point_selector>  # defaults relative to root window.  
     .scaled()  # location does change with window resizing or layout updates.  
         .<point_selector>  # defaults relative to container holding widget.  
     .distance()  # sets anchor point some unit length away from relative point of another widget.  
         .<point_selector>  # relative point: defaults relative to container holding widget.  
-        .fixed(unit)  # Fixed unit distance. Does not change with window resizing or layout updates. Will override scaled if it's the last one set.  
-        .scaled(unit)  # Scaled relative to some widgets height and weight values. Will override fixed if it's the last one set.  
-            .relative_to(widget_id)  # defaults relative to size of relative point. But can be set to be scaled off a different widget if desired.  
+        .fixed(value)  # Fixed unit distance. Does not change with window resizing or layout updates. Will override scaled if it's the last one set.  
+            .<unit_selector>
+        .scaled(value)  # Scaled relative to some widgets height and weight values. Will override fixed if it's the last one set.  
+            .<unit_selector>
         .angle(degree)  # Direction from relative anchor point. 0 = right.  
         .left()  # Sets angle to 180.  
         .right()  # Sets angle to 0.  
@@ -401,7 +400,19 @@ container
         .down()  # Sets angle to 270.  
         .set()  # Finalizes setting, returns to current widget editor main.  
     .prototype(prototype_id)  # Saves a prototype of this location configuration to the root window. # Does not save relative_to information.  
+    .use_prototype(prototype_id, location)
     .build()  # builds the location and returns to the layout manager.  
+```
+
+### Unit Selector
+```
+.<method_that_called_unit_selector>
+    .unit()  
+        .pixels()  # default.  
+        .scale()  # scaled value where 1 represents the height or width value of the relative widget.  
+            .relative_to(widget_id)  # Defaults to container holding this widget.  
+        .percent()  # percent value, just the scaled value * 100.  
+            .relative_to(widget_id)  # Defaults to container holding this widget.
 ```
 
 ### Relativity Selector
@@ -426,13 +437,11 @@ container
 ```
 .<method_that_called_point_selector>  # Picks a point relative to another widget based on some unit of measurement.  
     .relative_to(widget_id)  # This option is not available if called from the relativity selector, and defaults to the relative widget that selector is selecting for.  
-    .unit()  
-        .pixels()  
-        .scale()  # scaled value where 1 represents the height or width value of the relative widget.  
-        .percent()  # percent value, just the scaled value * 100.  
     .X(x_unit)  
+        .<unit_selector>
         .<relativity_selector>    # defaults relative to anchor point.  
     .Y(y_unit)  
+        .<unit_selector>
         .<relativity_selector>    # defaults relative to anchor point.  
     .set()  # Configures point and exits selector.  
 ```
@@ -441,19 +450,68 @@ container
 ```
 .<method_that_called_size_selector>  # Picks a size based on unit distances away from relative anchor point.  
     .relative_to(widget_id)  # defaults relative to widget calling size selector.  
-    .unit()  
-        .pixels()  
-        .scale()  # scaled value where 1 represents the height or width value of the relative widget.  
-        .percent()  # percent value, just the scaled value * 100.  
     .left(x_unit)  
+        .<unit_selector>
         .<relativity_selector>  # defaults relative to anchor point.  
     .right(x_unit)  
+        .<unit_selector>
         .<relativity_selector>  # defaults relative to anchor point.  
     .top(y_unit)  
+        .<unit_selector>
         .<relativity_selector>  # defaults relative to anchor point.  
     .bottom(y_unit)  
+        .<unit_selector>
         .<relativity_selector>  # defaults relative to anchor point.  
     .set()  # Configures size and exits selector.  
+```
+
+## Theme Builder
+```
+.<method_that_called_theme_builder>  
+    .use_preset(theme)  # Uses Qt Preset theme.
+    .use_prototype(prototype_id)
+    .prototype(prototype_id)
+    .color(red, green, blue, opacity)
+    .border()
+        .color(red, green, blue, opacity)
+        .thickness(value)
+            .<unit_selector>
+        .radius(value)  # For creating rounded corners or circles
+            .<unit_selector>
+    .shadow()
+        .offset_x(value)
+            .<unit_selector>
+        .offset_x(value)
+            .<unit_selector>
+        .blur_radius(value)
+            .<unit_selector>
+        .spread(value)
+            .<unit_selector>
+        .color(red, green, blue, opacity)
+        .remove()  # Removes shadow.
+    .content()  # Applies to internal content.
+        .<type_specific_customization>  # Different types of internal content have different types of theme options (EX: Font).
+```
+
+## Animation Builder
+```
+.<method_that_called_animation_builder>
+    .prototype(prototype_id)
+    .use_prototype(prototype_id, animation)
+    .add_frame()  # Add a frame to specify what state the widget should be in at moment in time.
+        .<frame_builder>
+```
+
+### Frame Builder
+```
+.<method_that_called_frame_Builder>
+    .index(value)  # Index values specify the order to play frames in.
+    .when(ms)  # Specifies when the widget should be in this state.
+    .ease(ease_type)  # Specifies how the transition should ease into the next frame.
+    .theme()
+        .<theme_builder>
+    .layout()  
+        .<layout_builder>  
 ```
 
 # EXAMPLE USAGE
