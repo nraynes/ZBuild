@@ -2,4 +2,4 @@
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
-include("${CMAKE_CURRENT_LIST_DIR}/zbuildTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/ZBuildTargets.cmake")

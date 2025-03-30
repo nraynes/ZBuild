@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(zbuild VERSION 0.1.0 LANGUAGES CXX)
+project(ZBuild VERSION 0.1.0 LANGUAGES CXX)
 
 # Set standard
 set(CMAKE_CXX_STANDARD 17)
@@ -12,20 +12,20 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 # Wrapper library (shared for dynamic linking)
-add_library(zbuild SHARED
+add_library(ZBuild SHARED
     src/main.cpp
     # Add more .cpp files here
 )
 
 # Public headers exposed for users
-target_include_directories(zbuild
+target_include_directories(ZBuild
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
 
 # Dynamically link Qt
-target_link_libraries(zbuild
+target_link_libraries(ZBuild
     PUBLIC
         Qt6::Core
         Qt6::Gui
@@ -35,34 +35,34 @@ target_link_libraries(zbuild
 # Export wrapper as a CMake package
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/zbuildConfigVersion.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/ZBuildConfigVersion.cmake"
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY AnyNewerVersion
 )
 
 configure_package_config_file(
-    "cmake/zbuildConfig.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/zbuildConfig.cmake"
-    INSTALL_DESTINATION lib/cmake/zbuild
+    "cmake/ZBuildConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/ZBuildConfig.cmake"
+    INSTALL_DESTINATION lib/cmake/ZBuild
 )
 
-install(TARGETS zbuild
-    EXPORT zbuildTargets
+install(TARGETS ZBuild
+    EXPORT ZBuildTargets
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     RUNTIME DESTINATION bin
-    INCLUDES DESTINATION include
+    INCLUDES DESTINATION include/ZBuild
 )
 
-install(DIRECTORY include/ DESTINATION include)
-install(EXPORT zbuildTargets
-    FILE zbuildTargets.cmake
-    NAMESPACE zbuild::
-    DESTINATION lib/cmake/zbuild
+install(DIRECTORY include/ DESTINATION include/ZBuild)
+install(EXPORT ZBuildTargets
+    FILE ZBuildTargets.cmake
+    NAMESPACE ZBuild::
+    DESTINATION lib/cmake/ZBuild
 )
 
 install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/zbuildConfig.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/zbuildConfigVersion.cmake"
-    DESTINATION lib/cmake/zbuild
+    "${CMAKE_CURRENT_BINARY_DIR}/ZBuildConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/ZBuildConfigVersion.cmake"
+    DESTINATION lib/cmake/ZBuild
 )

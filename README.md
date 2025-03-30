@@ -1,5 +1,8 @@
 # Building Package
 
+This project was developed on MAC. If you're a windows user, sorry, you'll have to wait until I get around to updating the readme to include setup instructions for Windows.
+Follow the steps below to build the package manually, or, you can use the script provided in the scripts folder to build it. Make sure to run it as a sudo user.
+
 ## Step 1: Configure and build
 ```
 cd <path_to_project>
@@ -21,6 +24,8 @@ sudo tar -czf zbuild-0.1.0.tar.gz *
 ```
 
 # Installing Package
+
+This step also has a script in the scripts folder if needed. Need to run as sudo user as well.
 
 ## Step 1: Install and setup ZBuild
 
@@ -54,28 +59,24 @@ cd <path_to_where_qt_tar.xz_downloaded>
 tar -xf qt-everywhere-src-6.8.3.tar.xz
 ```
 
-- Configure Qt
+- Configure Qt (This will take a while, be prepared to wait for like 30 minutes).
 ```
 cd qt-everywhere-src-6.8.3
 ./configure -prefix $HOME/Qt6
 cmake --build .
 ```
 
-- Export the path.
-```
-export CMAKE_PREFIX_PATH="$HOME/Qt6"
-```
-
 ## Step 3: Include in CMakeLists.txt
 
 ```
-find_package(zbuild REQUIRED PATHS $HOME/ZBuild/lib/cmake/zbuild)
+find_package(ZBuild REQUIRED)
 
-target_link_libraries(<app_name> PRIVATE zbuild::zbuild)
+target_link_libraries(<app_name> PRIVATE ZBuild::ZBuild)
 ```
 
 ## Step 4: Build project.
 
+Build with the commands below or use cmake in vscode. Kit configuration available below.
 ```
 cmake -B build
 cmake --build build
@@ -93,7 +94,7 @@ touch .vscode/cmake-kits.json
 open .vscode/cmake-kits.json
 ```
 
-- Paste this into the cmake-kits.json file and save it.
+- Paste this into the cmake-kits.json file and save it. Make sure that you use that actual path name and not $HOME here.
 ```
 [
   {
@@ -103,7 +104,7 @@ open .vscode/cmake-kits.json
       "C": "/usr/bin/clang"
     },
     "environmentVariables": {
-      "CMAKE_PREFIX_PATH": "$HOME/Qt6"
+      "CMAKE_PREFIX_PATH": "<home_path>/Qt6;<home_path>/ZBuild"
     },
     "toolchainFile": "",
     "preferredGenerator": {
@@ -114,7 +115,82 @@ open .vscode/cmake-kits.json
 ```
 
 - Next, hit "Cmd + Shift + P" and choose "CMake: Configure", then choose the kit "Qt6 with Ninja".
+- If you already configured the project, the choose "CMake: Select a Kit" instead.
+- If you are just developing in the ZBuild project and not installing it to another project, don't include the ZBuild path in CMAKE_PREFIX_PATH for the kit.
 
+# Development Settings
+
+The following are my developer settings that I prefer for VSCode. These go in the .vscode folder in a settings.json file.
+
+```
+{
+  "cmake.sourceDirectory": "${workspaceFolder}",
+  "cmake.cmakePath": "/opt/homebrew/bin/cmake",
+  "cmake.generator": "Ninja",
+  "cmake.buildDirectory": "${workspaceFolder}/build",
+  "cmake.configureOnOpen": true,
+  "files.associations": {
+      "vector": "cpp",
+      "__bit_reference": "cpp",
+      "__split_buffer": "cpp",
+      "cstddef": "cpp",
+      "cstdint": "cpp",
+      "cstdlib": "cpp",
+      "cstring": "cpp",
+      "initializer_list": "cpp",
+      "iosfwd": "cpp",
+      "istream": "cpp",
+      "limits": "cpp",
+      "locale": "cpp",
+      "new": "cpp",
+      "ostream": "cpp",
+      "sstream": "cpp",
+      "stdexcept": "cpp",
+      "string": "cpp",
+      "tuple": "cpp",
+      "typeinfo": "cpp",
+      "__hash_table": "cpp",
+      "__locale": "cpp",
+      "__node_handle": "cpp",
+      "__threading_support": "cpp",
+      "__tree": "cpp",
+      "__verbose_abort": "cpp",
+      "array": "cpp",
+      "bitset": "cpp",
+      "cctype": "cpp",
+      "clocale": "cpp",
+      "cmath": "cpp",
+      "complex": "cpp",
+      "cstdarg": "cpp",
+      "cstdio": "cpp",
+      "ctime": "cpp",
+      "cwchar": "cpp",
+      "cwctype": "cpp",
+      "deque": "cpp",
+      "execution": "cpp",
+      "memory": "cpp",
+      "fstream": "cpp",
+      "iomanip": "cpp",
+      "ios": "cpp",
+      "iostream": "cpp",
+      "list": "cpp",
+      "map": "cpp",
+      "mutex": "cpp",
+      "optional": "cpp",
+      "print": "cpp",
+      "queue": "cpp",
+      "ratio": "cpp",
+      "stack": "cpp",
+      "streambuf": "cpp",
+      "string_view": "cpp",
+      "unordered_map": "cpp",
+      "valarray": "cpp",
+      "variant": "cpp",
+      "algorithm": "cpp",
+      "random": "cpp"
+  }
+}
+```
 # General
 
 ZBuild is a wrapper for Qt to make GUI development easy and simple for quick prototyping or basic tools.
