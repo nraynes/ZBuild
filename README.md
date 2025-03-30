@@ -1,7 +1,7 @@
 # Building Package
 
 This project was developed on MAC. If you're a windows user, sorry, you'll have to wait until I get around to updating the readme to include setup instructions for Windows.
-Follow the steps below to build the package manually, or, you can use the script provided in the scripts folder to build it. Make sure to run it as a sudo user.
+Follow the steps below to build the package manually, or, you can use the cmake script provided to build it.
 
 ## Step 1: Configure and build
 ```
@@ -25,7 +25,7 @@ sudo tar -czf zbuild-0.1.0.tar.gz *
 
 # Installing Package
 
-This step also has a script in the scripts folder if needed. Need to run as sudo user as well.
+This step will install the project to your machine for use as a dependency in other projects. There is also a cmake script toi automate this if needed. Package must be built first in order to run the install script.
 
 ## Step 1: Install and setup ZBuild
 
@@ -97,26 +97,60 @@ open .vscode/cmake-kits.json
 - Paste this into the cmake-kits.json file and save it. Make sure that you use that actual path name and not $HOME here.
 ```
 [
-  {
-    "name": "Qt6 with Ninja",
-    "compilers": {
-      "CXX": "/usr/bin/clang++",
-      "C": "/usr/bin/clang"
+    {
+        "name": "Qt6 with Ninja",
+        "compilers": {
+            "CXX": "/usr/bin/clang++",
+            "C": "/usr/bin/clang"
+        },
+        "environmentVariables": {
+            "CMAKE_PREFIX_PATH": "<$HOME_path>/Qt6"
+        },
+        "toolchainFile": "",
+        "preferredGenerator": {
+            "name": "Ninja"
+        }
     },
-    "environmentVariables": {
-      "CMAKE_PREFIX_PATH": "<home_path>/Qt6;<home_path>/ZBuild"
+    {
+        "name": "Qt6 with Ninja + Auto Package",
+        "compilers": {
+            "CXX": "/usr/bin/clang++",
+            "C": "/usr/bin/clang"
+        },
+        "environmentVariables": {
+            "CMAKE_PREFIX_PATH": "<$HOME_path>/Qt6",
+            "CMAKE_BUILD_TYPE": "Release",
+            "ZBUILD_AUTO_PACKAGE": "ON"
+        },
+        "toolchainFile": "",
+        "preferredGenerator": {
+            "name": "Ninja"
+        }
     },
-    "toolchainFile": "",
-    "preferredGenerator": {
-      "name": "Ninja"
+    {
+        "name": "Qt6 with Ninja + Auto Package & Install",
+        "compilers": {
+            "CXX": "/usr/bin/clang++",
+            "C": "/usr/bin/clang"
+        },
+        "environmentVariables": {
+            "CMAKE_PREFIX_PATH": "<$HOME_path>/Qt6",
+            "CMAKE_BUILD_TYPE": "Release",
+            "ZBUILD_AUTO_PACKAGE": "ON",
+            "ZBUILD_AUTO_INSTALL": "ON"
+        },
+        "toolchainFile": "",
+        "preferredGenerator": {
+            "name": "Ninja"
+        }
     }
-  }
 ]
 ```
 
 - Next, hit "Cmd + Shift + P" and choose "CMake: Configure", then choose the kit "Qt6 with Ninja".
 - If you already configured the project, the choose "CMake: Select a Kit" instead.
 - If you are just developing in the ZBuild project and not installing it to another project, don't include the ZBuild path in CMAKE_PREFIX_PATH for the kit.
+- These different kits give the option to automatically package and/or install the release version of the project.
 
 # Development Settings
 
