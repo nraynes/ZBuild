@@ -1,3 +1,7 @@
+# ZBuild
+
+ZBuild is a wrapper for Qt, and is designed to make UI development simple and easy while keeping access to all the advanced features of Qt allowing you to make high quality native looking applications in code with as low as just 1 line of code.
+
 # Building Package
 
 This project was developed on MAC. If you're a windows user, sorry, you'll have to wait until I get around to updating the readme to include setup instructions for Windows.
@@ -226,85 +230,99 @@ The following are my developer settings that I prefer for VSCode. These go in th
   }
 }
 ```
-# General
 
-ZBuild is a wrapper for Qt to make GUI development easy and simple for quick prototyping or basic tools.
+# Widget Factory
 
-Features:
+A **factory** (uses factory design pattern) provides the interface for acquiring the builder for each type of widget.
 
-There are 3 different types of *decorator** wrapped widgets:
-Display Widgets
-Control Widgets
-Container Widgets
+# Widgets
 
-Display widgets are widgets that display something.
-Control widgets are widgets that control things.
-Container widgets are widgets that contain other widgets.
+There are 3 different basic types of widgets.
+- **Display Widgets**: Widgets that display things.
+- **Control Widgets**: Widgets that control things.
+- **Container Widgets**: Widgets that contain other widgets.
 
-Pretty simple right.
+Each widget has some kind of *internal content*. This content can be text, an image, or even other widgets.
 
-The Container widgets are structure as **composites** to allow for easy handling of the internal widgets. This type of widget allows you to configure the layout inside the container. The root of the gui is a Container widget as well.
+The container widget is the only widget that can contain multiple other widgets as internal content.
 
-Each widget implements events that use a **state** design pattern so that different behaviour can be defined when the widget is in different states, or different events happen, or none at all.
+Widgets follow the **composite** design pattern, where container widgets are composites and both control and display widgets are leaves. This allows for a simple hierarchical widget structure and easy custom layouts.
 
-There is an **adapter** design pattern that takes specific params, and converts them to the appropriate params for Qt so that everything has one interface.
+Widgets implement the **state** design pattern for their event handling. This allows the behavior defined by the event to be implemented separate from the widgets.
 
-A **Factory** supplies each of the wrapped widgets via a **builder** for that widget.
+Widgets themselves are built via a **builder** design pattern. This separates each widget configuration setting, layout configuration, and theme configuration from the widget itself and provides a neat interface for setting them. Each widget has an ID that must be set to allow searching via hashmap in the main application.
 
-The **builder** for the widget will allow you to create and configure a widget easily in a chainable format. This will also allow you to bind control widgets to events and allows the current widget access to the full app and all widgets, able to reference one by id if needed in the event that updates are needed.
+### Events
 
-Finally, there will be a **builder** that allows you to build the entire GUI, with the root functioning as a Container widget, allowing you to set the layout. You can chain commands to create new widgets, configure them, and access the whole gui container and all contained widgets for reference. You can set the active widget being modified with a specific command from the builder as well to go back and configure previously created widgets.
+Events are specific actions or states that a widget is in when something happens. For example, a widget can be clicked and will then be in the "clicked" state, which is handled via the .on_click() event. These events can be bound to methods or functions in order to create custom logic for your application. Every event bound method will be supplied with 1 argument, and thats a pointer to the main application. This gives each event bound method access to values from other widgets internal states, or the ability to alter the UI based on some custom logic.
+
+#### Event Modifiers
+
+Event modifiers allow you to delay an event bound method from executing for a certain amount of time after a relative point in time. This relative point could be when an event starts, or when an event finishes. The 2 core event modifiers available are:
+
+<no_modifier> = When no modifier is selected, the event bound method runs immediately when the event happens.  
+.finished() = Runs the event bound method when the event is finished.  
+.after(ms) = Runs the event bound method after a certain amount of milliseconds from when the event starts. This can be placed after *.finished()* to run the event bound method a certain amount fo milliseconds from when the event finishes.  
+
+### Qt Wrapper
+
+There is an **adapter** (uses adapter design pattern) that adapts the format of inputs from ZBuild to Qt, separating the implementation of ZBuild from Qt. This allows for any GUI library to be used instead of Qt as long as it supports similar features.
+
+# ZBuilder
+
+Finally, the ZBuilder is the main application that also follows the **builder** design pattern and allows you to build the entire GUI, with the root functioning as a Container widget, allowing you to set the layout. You can chain commands to create new widgets, configure them, and access the whole gui container and all contained widgets for reference. You can set the active widget being modified with a specific command from the builder as well to go back and configure previously created widgets.
 
 This allows you to functionally create a gui in one line of code.
 
-You can create **prototypes** of widgets, layouts, or layout components like size or location to reuse throughout the application. These get saved to the root window as pointers in a hashmap so they can be retreived easily.
+## Prototypes
 
-You will also be able to build individual widgets or layouts and store them in variables for use outside the builder if necessary via the actual widgetbuilder. You can add these widgets or layouts to another builder via the .use_prototype(prototype_id), but this can all be done in the main builder anyways since it will store pointers to the prototypes.
+You can create **prototypes** of widgets, layouts, or layout components like size, location, or theme to reuse throughout the application. These get saved to the ZBuilder as pointers in a hashmap so they can be retreived easily.
 
-ZBuild basics:
+You will also be able to build individual widgets or layouts and store them in separate files if necessary via the widget factory. You can add these widgets or layouts to the ZBuilder (or another component builder) via the .use_prototype(prototype_id), but this can all be done in the main builder as well since it will store pointers to the prototypes.
 
-ZBuild(**root_params) = create a new gui builder and set the root as the active widget. Root window is a special container type widget.
-NOTE: The root window has properties that save specific information about the application such as storing:
-    - widget prototypes. (May come with a few defaults, like multiple widgets in a container set as a template.)
-    - layout prototypes. (May come with some default layouts.)
-    - location prototypes. (May come with a few defaults, like "align_center", "align_left", etc.)
-    - size prototypes. (May come with a few defaults, like "stretch", "fixed", etc.)
-    - ID of root window, "root".
+# Builder Reference
+
+ZBuilder(**root_params) = create a new gui builder and sets the root as the active widget.
+
+NOTE: The ZBuilder has properties that save specific information about the application such as storing:
+    - hashmap of widget prototypes. (May come with a few defaults, like multiple widgets in a container set as a template.)
+    - hashmap of layout prototypes. (May come with some default layouts.)
+    - hashmap of location prototypes. (May come with a few defaults, like "align_center", "align_left", etc.)
+    - hashmap of size prototypes. (May come with a few defaults, like "stretch", "fixed", etc.)
     - hashmap of widget pointers by id (for easy retrieval).
+    - ID of root window, "root".
     - Window title.
     - Window icon.
     - Debug mode. (Shows bounding boxes and anchor points for debugging.)
     - etc.
 
-.start() = Starts the application, no need to change the active widget if it precedes this, since this will exit the builde anyways.
+.start() = Starts the application, no need to change the active widget if it precedes this, since this will exit the builder anyways.
 
 .build() = Just builds the aplication, but does not start it.
-
-# Any widget has access to this command.
 
 .widget(widget_id)  # Returns a pointer to a specific widget from root via hashmap lookup. This allows you to change what widget is being built mid chain.
     .<widget_editor>
 
-# Container Widgets
+## Container Widgets
 
-container  # Root window is a container, but this applies to all container widgets. 
+container
     .<widget_editor>  # Edits the container widget.
     .get(widget_id)  # Gets a widget within this container specifically.
         .<widget_editor>
     .add()
-        .use_prototype(prototype_id)  # Instantiate a prototyped widget.
+        .use_prototype(prototype_id, widget)  # Instantiate a prototyped widget, or load a widget from separate file.
             .<widget_editor>
         .<widget_type>(widget_id)
             .<widget_editor>
     .delete(widget_id)
         
 
-# Widget editor.
+## Widget editor.
 
 .<method_that_called_widget>
     .layout()
         .<layout_manager>
-        .use_prototype(prototype_id)  # Use a layout prototype. Will override all current layout settings.
+        .use_prototype(prototype_id, widget)  # Use a layout prototype. Will override all current layout settings.
     .<event_type>  # May or may not have event param.
         .after(milliseconds)  # Can specify time in ms to run bound method after event starts.
         .finished()  # Specifes to run bound method after event finishes
@@ -316,15 +334,15 @@ container  # Root window is a container, but this applies to all container widge
     .done()  # Exits widget editor. Returns to the container hosting this widget.
     .build()  # Returns a fully built widget to use outside of the main builder.
 
-# Layout manager.
+## Layout manager.
 
 .<method_that_called_layout_manager>
     .size()
         .<size_manager>
-        .use_prototype(prototype_id)  # Use a size prototype. Will override all current size settings.
+        .use_prototype(prototype_id, widget)  # Use a size prototype. Will override all current size settings.
     .location()
         .<location_manager>
-        .use_prototype(prototype_id)  # Use a location prototype. Will override all current location settings.
+        .use_prototype(prototype_id, widget)  # Use a location prototype. Will override all current location settings.
     .prototype(prototype_id)  # Creates a prototype of this layout that can be reused by multiple widgets. Saves to root window. # Does not save relative_to information.
     .build()  # Finalizes the layout and returns to the widget editor that called the manager.
 
@@ -431,7 +449,7 @@ container  # Root window is a container, but this applies to all container widge
     .set()  # Configures size and exits selector.
 
 
-EXAMPLE USAGE:
+# EXAMPLE USAGE
 
 ZBuild()
   .title("ZLogin App")
