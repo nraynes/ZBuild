@@ -104,7 +104,7 @@ open .vscode/cmake-kits.json
             "C": "/usr/bin/clang"
         },
         "environmentVariables": {
-            "CMAKE_PREFIX_PATH": "<$HOME_path>/Qt6"
+            "CMAKE_PREFIX_PATH": "<$HOME_path>/ZBuild;<$HOME_path>/Qt6"
         },
         "toolchainFile": "",
         "preferredGenerator": {
@@ -118,7 +118,7 @@ open .vscode/cmake-kits.json
             "C": "/usr/bin/clang"
         },
         "environmentVariables": {
-            "CMAKE_PREFIX_PATH": "<$HOME_path>/Qt6",
+            "CMAKE_PREFIX_PATH": "<$HOME_path>/ZBuild;<$HOME_path>/Qt6",
             "CMAKE_BUILD_TYPE": "Release",
             "ZBUILD_AUTO_PACKAGE": "ON"
         },
@@ -134,7 +134,7 @@ open .vscode/cmake-kits.json
             "C": "/usr/bin/clang"
         },
         "environmentVariables": {
-            "CMAKE_PREFIX_PATH": "<$HOME_path>/Qt6",
+            "CMAKE_PREFIX_PATH": "<$HOME_path>/ZBuild;<$HOME_path>/Qt6",
             "CMAKE_BUILD_TYPE": "Release",
             "ZBUILD_AUTO_PACKAGE": "ON",
             "ZBUILD_AUTO_INSTALL": "ON"
@@ -149,7 +149,7 @@ open .vscode/cmake-kits.json
 
 - Next, hit "Cmd + Shift + P" and choose "CMake: Configure", then choose the kit "Qt6 with Ninja".
 - If you already configured the project, the choose "CMake: Select a Kit" instead.
-- If you are just developing in the ZBuild project and not installing it to another project, don't include the ZBuild path in CMAKE_PREFIX_PATH for the kit.
+- If you are just developing in the ZBuild project and not installing it to another project, don't include the ZBuild path in CMAKE_PREFIX_PATH for the kit. However, if you are using ZBuild as a dependency in another project, you'll have to install it to your machine via the instructions above and make sure to use the CMAKE_PREFIX_PATH from the kits above. Alternatively, change the path names to a custom location if you installed ZBuild or Qt to a custom location on your machine. Both ZBuild and Qt must be installed separately.
 - These different kits give the option to automatically package and/or install the release version of the project.
 
 # Development Settings
