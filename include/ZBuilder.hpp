@@ -1,6 +1,11 @@
 #pragma once
 
-class Template {
+#include <uuid/uuid.h>
+
+class ZBuilder {
+    private:
+        int id;
+
     public:
-        void say_something();
+        void build();
 };

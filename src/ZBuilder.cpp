@@ -1,6 +1,6 @@
-#include <main.hpp>
+#include <ZBuilder.hpp>
 #include <iostream>
 
-void Template::say_something() {
+void ZBuilder::say_something() {
     std::cout << "Hello world!" << std::endl;
 }
