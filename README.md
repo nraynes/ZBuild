@@ -308,7 +308,7 @@ NOTE: The ZBuilder has properties that save specific information about the appli
 
 ## Container Widget Builder
 ```
-container  
+.<method_that_called_container>(widget_id)
     .<widget_editor>  # Edits the container widget.  
     .get(widget_id)  # Gets a widget within this container specifically.  
         .<widget_editor>  
@@ -322,7 +322,7 @@ container
 
 ## Widget Builder
 ```
-.<method_that_called_widget>  
+.<method_that_called_widget>(widget_id)  
     .theme()
         .<theme_builder>
     .layout()  
