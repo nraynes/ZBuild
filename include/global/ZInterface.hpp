@@ -1,11 +1,11 @@
 #pragma once
 
 #include <QPointer>
+#include <QWidget>
 #include <memory>
 #include <string>
 
 class ZBuilder;
-class Widget;
 
 class ZInterface {
     protected:
@@ -14,7 +14,7 @@ class ZInterface {
     public:
         ZInterface(std::shared_ptr<ZBuilder> zbuilder);
 
-        QPointer<Widget> widget(std::string widget_id);
+        QPointer<QWidget> widget(std::string widget_id);
 
         int run();
 };
