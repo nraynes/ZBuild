@@ -14,10 +14,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 # Wrapper library (shared for dynamic linking)
-add_library(ZBuild SHARED
-    src/main.cpp
-    # Add more .cpp files here
+file(GLOB_RECURSE ZBUILD_SOURCES CONFIGURE_DEPENDS
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
 )
+
+add_library(ZBuild SHARED ${ZBUILD_SOURCES})
 
 # Public headers exposed for users
 target_include_directories(ZBuild
