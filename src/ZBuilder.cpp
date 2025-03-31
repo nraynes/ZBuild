@@ -1,6 +1,8 @@
 #include <ZBuilder.hpp>
-#include <iostream>
+#include <memory>
 
-void ZBuilder::say_something() {
-    std::cout << "Hello world!" << std::endl;
+ZBuilder::ZBuilder(int& argc, char** argv) : app(std::make_unique<QApplication>(argc, argv)), id("root") {}
+
+int ZBuilder::run() {
+    return this->app->exec();
 }

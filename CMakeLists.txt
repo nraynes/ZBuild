@@ -7,6 +7,9 @@ file(WRITE "${CMAKE_BINARY_DIR}/zbuild_name.txt" "${PROJECT_NAME}")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# For VSCode.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Use folders in IDEs
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -20,12 +23,38 @@ file(GLOB_RECURSE ZBUILD_SOURCES CONFIGURE_DEPENDS
 
 add_library(ZBuild SHARED ${ZBUILD_SOURCES})
 
+file(GLOB_RECURSE ALL_INCLUDE_DIRS
+    RELATIVE "${PROJECT_SOURCE_DIR}/include"
+    "${PROJECT_SOURCE_DIR}/include/*"
+)
+
+set(INCLUDE_DIRS "")
+foreach(path IN LISTS ALL_INCLUDE_DIRS)
+    get_filename_component(dir "${PROJECT_SOURCE_DIR}/include/${path}" DIRECTORY)
+    list(APPEND INCLUDE_DIRS "${dir}")
+endforeach()
+
+file(GLOB_RECURSE ALL_SRC_INCLUDE_DIRS
+    RELATIVE "${PROJECT_SOURCE_DIR}/src"
+    "${PROJECT_SOURCE_DIR}/src/*"
+)
+
+foreach(path IN LISTS ALL_SRC_INCLUDE_DIRS)
+    get_filename_component(dir "${PROJECT_SOURCE_DIR}/src/${path}" DIRECTORY)
+    list(APPEND INCLUDE_DIRS "${dir}")
+endforeach()
+
+list(REMOVE_DUPLICATES INCLUDE_DIRS)
+
 # Public headers exposed for users
 target_include_directories(ZBuild
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
+    PRIVATE
+        ${INCLUDE_DIRS}
 )
+
 
 # Dynamically link Qt
 target_link_libraries(ZBuild
@@ -57,7 +86,9 @@ install(TARGETS ZBuild
     INCLUDES DESTINATION include
 )
 
-install(DIRECTORY include/ DESTINATION include/ZBuild)
+file(GLOB_RECURSE ZBUILD_HEADERS "${CMAKE_SOURCE_DIR}/include/*.hpp")
+
+install(FILES ${ZBUILD_HEADERS} DESTINATION include/ZBuild)
 install(EXPORT ZBuildTargets
     FILE ZBuildTargets.cmake
     NAMESPACE ZBuild::

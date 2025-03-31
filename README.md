@@ -168,6 +168,7 @@ The following are my developer settings that I prefer for VSCode. These go in th
   "cmake.generator": "Ninja",
   "cmake.buildDirectory": "${workspaceFolder}/build",
   "cmake.configureOnOpen": true,
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
   "files.associations": {
       "vector": "cpp",
       "__bit_reference": "cpp",
@@ -290,6 +291,8 @@ NOTE: The ZBuilder has properties that save specific information about the appli
     - hashmap of layout prototypes. (May come with some default layouts.)  
     - hashmap of location prototypes. (May come with a few defaults, like "align_center", "align_left", etc.)  
     - hashmap of size prototypes. (May come with a few defaults, like "stretch", "fixed", etc.)  
+    - hashmap of theme prototypes. (May come with a few defaults.) 
+    - hashmap of animation prototypes. (May come with a few defaults.) 
     - hashmap of widget pointers by id (for easy retrieval).  
     - ID of root window, "root".  
     - Window title.  
@@ -297,9 +300,7 @@ NOTE: The ZBuilder has properties that save specific information about the appli
     - Debug mode. (Shows bounding boxes and anchor points for debugging.)  
     - etc.  
 ```
-.start()  # Starts the application, no need to change the active widget if it precedes this, since this will exit the builder anyways.
-
-.build()  # Just builds the aplication, but does not start it.
+.run()  # Starts the application, no need to change the active widget if it precedes this, since this will exit the builder anyways.
 
 .widget(widget_id)  # Returns a pointer to a specific widget from root via hashmap lookup. This allows you to change what widget is being built mid chain.  
     .<widget_editor>
