@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(ZBuild VERSION 0.1.0 LANGUAGES CXX)
-file(WRITE "${CMAKE_BINARY_DIR}/zbuild_version.txt" "${PROJECT_VERSION}")
-file(WRITE "${CMAKE_BINARY_DIR}/zbuild_name.txt" "${PROJECT_NAME}")
+file(WRITE "${CMAKE_BINARY_DIR}/zbuild_version.txt" ${PROJECT_VERSION})
+file(WRITE "${CMAKE_BINARY_DIR}/zbuild_name.txt" ${PROJECT_NAME})
 
 # Set standard
 set(CMAKE_CXX_STANDARD 17)
@@ -21,47 +21,39 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 # Wrapper library (shared for dynamic linking)
 file(GLOB_RECURSE ZBUILD_HEADERS CONFIGURE_DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp
+    "${PROJECT_SOURCE_DIR}/include/*.hpp"
 )
 
 file(GLOB_RECURSE ZBUILD_SOURCES CONFIGURE_DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+    "${PROJECT_SOURCE_DIR}/src/*.cpp"
+)
+
+file(GLOB_RECURSE ZBUILD_TESTS CONFIGURE_DEPENDS
+    "${PROJECT_SOURCE_DIR}/test/*.cpp"
 )
 
 add_library(ZBuild SHARED ${ZBUILD_SOURCES} ${ZBUILD_HEADERS})
 
-file(GLOB_RECURSE ALL_INCLUDE_DIRS
-    RELATIVE "${PROJECT_SOURCE_DIR}/include"
-    "${PROJECT_SOURCE_DIR}/include/*"
-)
-
 set(INCLUDE_DIRS "")
-foreach(path IN LISTS ALL_INCLUDE_DIRS)
-    get_filename_component(dir "${PROJECT_SOURCE_DIR}/include/${path}" DIRECTORY)
-    list(APPEND INCLUDE_DIRS "${dir}")
+foreach(path IN LISTS ZBUILD_HEADERS)
+    get_filename_component(dir ${path} DIRECTORY)
+    list(APPEND INCLUDE_DIRS ${dir})
 endforeach()
 
-file(GLOB_RECURSE ALL_SRC_INCLUDE_DIRS
-    RELATIVE "${PROJECT_SOURCE_DIR}/src"
-    "${PROJECT_SOURCE_DIR}/src/*"
-)
-
-foreach(path IN LISTS ALL_SRC_INCLUDE_DIRS)
-    get_filename_component(dir "${PROJECT_SOURCE_DIR}/src/${path}" DIRECTORY)
-    list(APPEND INCLUDE_DIRS "${dir}")
+foreach(path IN LISTS ZBUILD_SOURCES)
+    get_filename_component(dir ${path} DIRECTORY)
+    list(APPEND INCLUDE_DIRS ${dir})
 endforeach()
-
 list(REMOVE_DUPLICATES INCLUDE_DIRS)
 
 # Public headers exposed for users
 target_include_directories(ZBuild
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
     PRIVATE
         ${INCLUDE_DIRS}
 )
-
 
 # Dynamically link Qt
 target_link_libraries(ZBuild
@@ -93,8 +85,6 @@ install(TARGETS ZBuild
     INCLUDES DESTINATION include
 )
 
-file(GLOB_RECURSE ZBUILD_HEADERS "${CMAKE_SOURCE_DIR}/include/*.hpp")
-
 install(FILES ${ZBUILD_HEADERS} DESTINATION include/ZBuild)
 install(EXPORT ZBuildTargets
     FILE ZBuildTargets.cmake
@@ -108,6 +98,7 @@ install(FILES
     DESTINATION lib/cmake/ZBuild
 )
 
+# Run custom scripts.
 if(DEFINED ENV{ZBUILD_AUTO_PACKAGE})
     add_custom_target(auto_package ALL
         COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake/ZBuildPackage.cmake
@@ -120,3 +111,13 @@ if(DEFINED ENV{ZBUILD_AUTO_PACKAGE})
         add_dependencies(auto_install auto_package)
     endif()
 endif()
+
+foreach(path IN LISTS ZBUILD_TESTS)
+    get_filename_component(filename ${path} NAME)
+    string(REPLACE ".cpp" "" testname ${filename})
+    add_executable(${testname} ${path})
+    target_link_libraries(${testname}
+        PRIVATE
+            ZBuild
+    )
+endforeach()
